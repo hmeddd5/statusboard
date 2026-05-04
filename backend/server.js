@@ -11,7 +11,8 @@ const server = http.createServer(app);
 const io = new Server(server, {
     cors: {
         origin: "*",
-    },
+        methods: ["GET", "POST"]
+    }
 });
 
 let members = [];
@@ -20,27 +21,24 @@ let history = [];
 io.on("connection", (socket) => {
     console.log("Utilisateur connecté :", socket.id);
 
-    // JOIN
     socket.on("user:join", (data) => {
         const member = {
             id: socket.id,
             name: data.name,
-            status: "En ligne",
+            status: "En ligne"
         };
 
         members.push(member);
-
-        history.push(`${data.name} a rejoint`);
+        history.push(`${data.name} a rejoint le board`);
 
         io.emit("members:update", members);
         io.emit("history:update", history);
     });
 
-    // CHANGE STATUS
     socket.on("status:change", (data) => {
         members = members.map((member) => {
             if (member.id === socket.id) {
-                history.push(`${member.name} est maintenant ${data.status}`);
+                history.push(`${member.name} → ${data.status}`);
                 return { ...member, status: data.status };
             }
             return member;
@@ -50,12 +48,11 @@ io.on("connection", (socket) => {
         io.emit("history:update", history);
     });
 
-    // DISCONNECT
     socket.on("disconnect", () => {
         const user = members.find((m) => m.id === socket.id);
 
         if (user) {
-            history.push(`${user.name} a quitté`);
+            history.push(`${user.name} a quitté le board`);
         }
 
         members = members.filter((m) => m.id !== socket.id);

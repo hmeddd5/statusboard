@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { io } from "socket.io-client";
 import "./App.css";
 
-const socket = io("http://localhost:3001");
+const socket = io("https://statusboard-gg23.onrender.com");
 
 function App() {
   const [name, setName] = useState("");
@@ -11,8 +11,13 @@ function App() {
   const [history, setHistory] = useState([]);
 
   useEffect(() => {
-    socket.on("members:update", (data) => setMembers(data));
-    socket.on("history:update", (data) => setHistory(data));
+    socket.on("members:update", (data) => {
+      setMembers(data);
+    });
+
+    socket.on("history:update", (data) => {
+      setHistory(data);
+    });
 
     return () => {
       socket.off("members:update");
@@ -42,7 +47,7 @@ function App() {
   };
 
   const countStatus = (status) => {
-    return members.filter((m) => m.status === status).length;
+    return members.filter((member) => member.status === status).length;
   };
 
   const getInitials = (memberName) => {
@@ -168,7 +173,7 @@ function App() {
         <footer>
           <p>Total {members.length}</p>
           <p>
-            <span className="dot online"></span> Socket.io connecté — ws://localhost:3001
+            <span className="dot online"></span> Socket.io connecté — Render backend
           </p>
         </footer>
       </div>
