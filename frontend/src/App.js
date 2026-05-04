@@ -2,8 +2,11 @@ import React, { useState, useEffect } from "react";
 import { io } from "socket.io-client";
 import "./App.css";
 
-const socket = io("https://statusboard-gg23.onrender.com");
-
+const socket = io(
+    window.location.hostname === "localhost"
+        ? "http://localhost:3001"
+        : "https://statusboard-gg23.onrender.com"
+);
 function App() {
   const [name, setName] = useState("");
   const [joined, setJoined] = useState(false);
